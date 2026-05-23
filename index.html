@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>FLOOR IS LAVA OUTER SPACE - Teacher Lizbeth</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;touch-action:none;-webkit-user-select:none;user-select:none}
+body{background:#05051a;display:flex;justify-content:center;align-items:center}
+#app{width:100%;height:100%;max-width:1000px;max-height:1200px;position:relative;overflow:hidden;display:flex;justify-content:center;align-items:center}
+.screen{position:absolute;top:0;left:0;width:100%;height:100%;display:none;flex-direction:column;align-items:center;justify-content:center;padding:8px}
+.screen.active{display:flex}
+#startScreen{background:linear-gradient(180deg,#0a0a2e 0%,#1a1a4e 30%,#0d0d3d 60%,#1a0a3a 100%);background-size:400%400%;animation:spaceBG 6s ease infinite}
+@keyframes spaceBG{0%{background-position:0%0%}50%{background-position:0%100%}100%{background-position:0%0%}}
+.title-wrapper{margin-bottom:8px;text-align:center;padding:0 8px}
+.bounce-title{font-size:clamp(14px,4vw,32px);font-weight:900;text-align:center;line-height:1.3;text-shadow:2px 2px 4px rgba(0,0,0,0.5);display:flex;flex-wrap:wrap;justify-content:center;gap:2px;padding:4px}
+.bounce-letter{display:inline-block;animation:bounce 1.2s ease-in-out infinite;font-size:clamp(14px,4vw,32px);font-weight:900}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.subtitle{font-size:clamp(11px,2.3vw,18px);color:#88ccff;font-weight:700;text-align:center;margin-bottom:3px}
+.lava-deco{font-size:clamp(22px,5vw,40px);text-align:center;margin:3px 0;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.input-group{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max-width:320px}
+.input-group label{font-size:clamp(12px,2.5vw,18px);font-weight:700;color:#88ccff}
+.input-group input{width:100%;padding:clamp(6px,1.5vw,11px);font-size:clamp(12px,2.5vw,17px);border:3px solid #4488ff;border-radius:20px;text-align:center;outline:none;background:rgba(255,255,255,0.95);color:#0a0a2e;font-weight:600}
+.input-group input:focus{border-color:#66aaff;box-shadow:0 0 15px rgba(102,170,255,0.4)}
+.start-group-row{display:flex;gap:10px;margin:6px 0}
+.start-group-btn{padding:clamp(8px,1.8vw,14px) clamp(20px,5vw,40px);font-size:clamp(14px,2.8vw,20px);font-weight:900;border:3px solid #66aaff;border-radius:14px;cursor:pointer;background:rgba(68,136,255,0.25);transition:all 0.3s;color:#88ddff;letter-spacing:1px}
+.start-group-btn:hover{transform:scale(1.04)}
+.start-group-btn.selected{background:linear-gradient(135deg,#4488ff,#3366cc);color:#fff;border-color:#4488ff;box-shadow:0 4px 20px rgba(68,136,255,0.4)}
+.start-group-btn:active{transform:scale(0.93)}
+.btn-start{background:linear-gradient(135deg,#4488ff,#3366cc);color:white;border:none;padding:clamp(8px,2vw,15px) clamp(22px,6vw,50px);font-size:clamp(14px,3vw,22px);font-weight:900;border-radius:25px;cursor:pointer;box-shadow:0 6px 20px rgba(68,136,255,0.5);transition:all 0.3s;letter-spacing:2px;margin-top:3px}
+.btn-start:hover{transform:scale(1.05);box-shadow:0 8px 25px rgba(68,136,255,0.7)}
+.btn-start:active{transform:scale(0.95)}
+#gameScreen{background:#05051a;padding:0}
+.game-header{width:100%;display:flex;justify-content:space-between;align-items:center;padding:3px 8px;background:rgba(10,10,46,0.9);border-bottom:2px solid #4488ff;flex-shrink:0;min-height:30px;z-index:2}
+.game-timer{font-size:clamp(14px,3vw,22px);color:#66ddff;font-weight:900;text-shadow:0 0 10px rgba(102,221,255,0.5)}
+.game-timer.urgent{color:#ff1744;animation:pulse 0.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.game-score{font-size:clamp(11px,2vw,17px);color:#fff;font-weight:700}
+.game-lives{font-size:clamp(10px,2vw,16px);color:#ff6b6b;font-weight:700;letter-spacing:1px}
+.game-progress{font-size:clamp(9px,1.6vw,13px);color:#ffab73;font-weight:600}
+.puzzle-area{width:100%;display:flex;flex-direction:column;align-items:center;padding:4px 8px;background:rgba(10,10,46,0.8);border-bottom:1px solid rgba(68,136,255,0.3);flex-shrink:0;z-index:2;min-height:clamp(50px,10vw,80px)}
+.puzzle-clue{display:flex;align-items:center;gap:8px;margin:2px 0}
+.puzzle-emoji{font-size:clamp(24px,4vw,36px)}
+.puzzle-hint{font-size:clamp(14px,3vw,22px);color:#88ccff;font-weight:900;text-transform:uppercase;letter-spacing:2px;text-shadow:0 0 15px rgba(136,204,255,0.3)}
+.puzzle-arrow{font-size:clamp(16px,2.5vw,24px);color:#4488ff}
+.puzzle-letters{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;margin:2px 0;min-height:clamp(22px,3.5vw,34px)}
+.letter-box{width:clamp(22px,3.5vw,32px);height:clamp(26px,4vw,36px);border:2px solid #4488ff;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:clamp(14px,3vw,22px);font-weight:900;color:#fff;background:rgba(68,136,255,0.15);text-transform:uppercase;transition:all 0.2s}
+.letter-box.filled{border-color:#2ecc71;background:rgba(46,204,113,0.2);color:#2ecc71}
+.letter-box.wrong{border-color:#e74c3c;background:rgba(231,76,60,0.2);color:#e74c3c;animation:shake 0.3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.canvas-wrapper{flex:1;width:100%;display:flex;justify-content:center;align-items:center;position:relative;min-height:0}
+#gameCanvas{width:100%;height:100%;display:block}
+.input-area{width:100%;padding:6px 10px;background:rgba(10,10,46,0.9);border-top:2px solid #4488ff;display:flex;gap:6px;align-items:center;flex-shrink:0;z-index:2}
+.input-area input{flex:1;padding:clamp(6px,1.2vw,10px);font-size:clamp(14px,2.5vw,20px);border:3px solid #4488ff;border-radius:12px;text-align:center;outline:none;background:rgba(255,255,255,0.95);color:#0a0a2e;font-weight:700;text-transform:uppercase;letter-spacing:2px}
+.input-area input:focus{border-color:#66aaff;box-shadow:0 0 15px rgba(102,170,255,0.3)}
+.input-area button{padding:clamp(6px,1.2vw,10px) clamp(14px,3vw,28px);font-size:clamp(12px,2vw,18px);font-weight:900;border:none;border-radius:12px;cursor:pointer;background:linear-gradient(135deg,#4488ff,#3366cc);color:#fff;transition:all 0.12s;box-shadow:0 3px 10px rgba(68,136,255,0.4)}
+.input-area button:active{transform:scale(0.9)}
+.feedback{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:clamp(26px,7vw,55px);font-weight:900;padding:12px 25px;border-radius:18px;pointer-events:none;opacity:0;transition:all 0.3s;z-index:20;text-align:center}
+.feedback.show{opacity:1;transform:translate(-50%,-50%) scale(1.1)}
+.feedback.correct{background:rgba(46,204,113,0.92);color:#fff;box-shadow:0 0 50px rgba(46,204,113,0.6)}
+.feedback.wrong{background:rgba(231,76,60,0.92);color:#fff;box-shadow:0 0 50px rgba(231,76,60,0.6)}
+#endScreen{background:linear-gradient(180deg,#0a0a2e 0%,#1a1a4e 30%,#0d0d3d 60%,#1a0a3a 100%)}
+.report-card{background:linear-gradient(135deg,#e8f0ff,#b0d0ff);border:4px solid #4488ff;border-radius:20px;padding:clamp(12px,2.5vw,25px);width:min(88%,420px);text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.5);position:relative;overflow:hidden;animation:cardSlide 0.6s ease-out}
+@keyframes cardSlide{0%{transform:scale(0.5) rotate(-5deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+.report-card::before{content:'';position:absolute;top:0;left:0;right:0;height:8px;background:linear-gradient(90deg,#4488ff,#66aaff,#88ccff,#aaddff,#3366cc)}
+.report-card::after{content:'🌍';position:absolute;bottom:6px;right:10px;font-size:20px;opacity:0.3}
+.report-ribbon{position:absolute;top:-10px;right:-10px;font-size:clamp(24px,5vw,40px);transform:rotate(15deg)}
+.report-badge{font-size:clamp(28px,7vw,52px);margin-bottom:3px}
+.report-title{font-size:clamp(12px,2.5vw,22px);font-weight:900;color:#1a1a4e;margin:2px 0;line-height:1.2}
+.report-student{font-size:clamp(16px,3.5vw,28px);font-weight:900;color:#3366cc;margin:4px 0}
+.report-score{font-size:clamp(28px,7vw,55px);font-weight:900;color:#4488ff;margin:2px 0;text-shadow:2px 2px 0 rgba(0,0,0,0.1)}
+.report-grade{font-size:clamp(48px,12vw,90px);font-weight:900;color:#4488ff;margin:0;text-shadow:3px 3px 0 rgba(0,0,0,0.15),0 0 30px rgba(68,136,255,0.3);line-height:1;letter-spacing:2px}
+.report-grade-bar{width:min(80%,180px);height:6px;background:linear-gradient(90deg,#4488ff,#66aaff,#88ccff,#aaddff,#3366cc);border-radius:3px;margin:2px auto;overflow:hidden;position:relative}
+.report-grade-bar::after{content:'';position:absolute;top:0;left:0;height:100%;width:var(--grade-pct);background:rgba(255,255,255,0.4);transition:width 0.5s}
+.report-label{font-size:clamp(11px,2.2vw,16px);color:#666;font-weight:600}
+.report-stars{font-size:clamp(14px,3vw,24px);margin:4px 0;display:flex;flex-wrap:wrap;justify-content:center;gap:1px;line-height:1.3}
+.report-footer{font-size:clamp(9px,1.8vw,13px);color:#888;font-weight:600;margin-top:5px;padding-top:5px;border-top:2px dashed #88ccff}
+.btn-restart{background:linear-gradient(135deg,#4488ff,#3366cc);color:white;border:none;padding:clamp(6px,1.5vw,11px) clamp(18px,4.5vw,40px);font-size:clamp(12px,2.5vw,18px);font-weight:900;border-radius:20px;cursor:pointer;box-shadow:0 4px 15px rgba(68,136,255,0.4);transition:all 0.3s;margin-top:5px}
+.btn-restart:hover{transform:scale(1.05)}
+.btn-restart:active{transform:scale(0.95)}
+@keyframes confettiFall{0%{opacity:1;transform:translateY(-100px) rotate(0deg)}100%{opacity:0;transform:translateY(100vh) rotate(720deg)}}
+@media(max-height:600px){
+.game-header{min-height:24px;padding:2px 5px}
+.puzzle-area{min-height:40px;padding:2px 5px}
+.letter-box{width:18px;height:22px;font-size:12px}
+.input-area{padding:3px 6px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="startScreen" class="screen active">
+<div class="title-wrapper">
+<div class="subtitle">🌍 SAVE THE EARTH FROM THE LAVA! 🌍</div>
+<div class="bounce-title" id="bounceTitle"></div>
+</div>
+<div class="lava-deco">🌍🚀☄️🌍🚀☄️🌍🚀☄️</div>
+<div class="input-group">
+<label for="nameInput">🌟 What's your name?</label>
+<input type="text" id="nameInput" placeholder="Type your name..." maxlength="20" autocomplete="off">
+<label style="font-size:clamp(11px,2.2vw,16px);margin-top:2px">👥 Choose your group:</label>
+<div class="start-group-row">
+<button class="start-group-btn" data-start-group="A">GROUP A</button>
+<button class="start-group-btn" data-start-group="B">GROUP B</button>
+</div>
+<button class="btn-start" id="btnStart">▶ SAVE THE EARTH!</button>
+</div>
+</div>
+<div id="gameScreen" class="screen">
+<div class="game-header">
+<div><span class="game-timer" id="gameTimer">⏱️ 20s</span></div>
+<div><span class="game-score" id="gameScore">⭐ 0</span></div>
+<div><span class="game-lives" id="gameLives">❤️❤️❤️</span></div>
+<div><span class="game-progress" id="gameProgress">1 / 15</span></div>
+</div>
+<div class="puzzle-area">
+<div class="puzzle-clue">
+<span class="puzzle-emoji" id="puzzleEmoji">🦉</span>
+<span class="puzzle-hint" id="puzzleHint">BÚHO</span>
+<span class="puzzle-arrow">→</span>
+<span style="color:#fff;font-weight:700;font-size:clamp(11px,2vw,16px)">ENGLISH?</span>
+</div>
+<div class="puzzle-letters" id="puzzleLetters"></div>
+</div>
+<div class="canvas-wrapper">
+<canvas id="gameCanvas"></canvas>
+<div class="feedback" id="feedback"></div>
+</div>
+<div class="input-area">
+<input type="text" id="answerInput" placeholder="Type the English word..." maxlength="20" autocomplete="off">
+<button id="btnSubmit">🚀 GO!</button>
+</div>
+</div>
+<div id="endScreen" class="screen">
+<div class="report-card">
+<div class="report-ribbon" id="reportRibbon">🏆</div>
+<div class="report-badge" id="reportBadge">🏆</div>
+<div class="report-title">FLOOR IS LAVA<br>OUTER SPACE<br>BY TEACHER LIZBETH</div>
+<div class="report-student" id="reportName">______</div>
+<div class="report-label">YOUR SCORE</div>
+<div class="report-score" id="reportScore">0 / 15</div>
+<div class="report-label">FINAL GRADE</div>
+<div class="report-grade" id="reportGrade">0.0</div>
+<div class="report-grade-bar" id="reportGradeBar"></div>
+<div class="report-stars" id="reportStars"></div>
+<div class="report-footer" id="reportFooter">🌍 Great job, space hero! 🌍</div>
+<button class="btn-restart" id="btnRestart">🔄 PLAY AGAIN</button>
+</div>
+</div>
+</div>
+<script>
+const VOCAB = [
+  { emoji: '🛰️', spanish: 'SATÉLITE', english: 'SATELLITE' },
+  { emoji: '🚀', spanish: 'NAVE ESPACIAL', english: 'SPACESHIP' },
+  { emoji: '🌙', spanish: 'LA LUNA', english: 'THE MOON' },
+  { emoji: '🪐', spanish: 'EL PLANETA', english: 'THE PLANET' },
+  { emoji: '☄️', spanish: 'COMETA', english: 'COMET' },
+  { emoji: '🛸', spanish: 'ESTACIÓN ESPACIAL', english: 'SPACE STATION' },
+  { emoji: '🌌', spanish: 'SISTEMA SOLAR', english: 'SOLAR SYSTEM' },
+  { emoji: '🔭', spanish: 'TELESCOPIO', english: 'TELESCOPE' },
+  { emoji: '✨', spanish: 'BRILLANTE', english: 'BRIGHT' },
+  { emoji: '🏔️', spanish: 'ENORME', english: 'ENORMOUS' },
+  { emoji: '🏋️', spanish: 'PESADO', english: 'HEAVY' },
+  { emoji: '🪶', spanish: 'LIGERO', english: 'LIGHT' },
+  { emoji: '↔️', spanish: 'ANCHO', english: 'WIDE' },
+  { emoji: '📍', spanish: 'LEJOS', english: 'FAR' },
+  { emoji: '🎯', spanish: 'CERCA', english: 'NEAR' }
+];
+
+var startScreen=document.getElementById('startScreen'),gameScreen=document.getElementById('gameScreen'),endScreen=document.getElementById('endScreen'),nameInput=document.getElementById('nameInput'),btnStart=document.getElementById('btnStart'),canvas=document.getElementById('gameCanvas'),ctx=canvas.getContext('2d'),puzzleEmoji=document.getElementById('puzzleEmoji'),puzzleHint=document.getElementById('puzzleHint'),puzzleLetters=document.getElementById('puzzleLetters'),answerInput=document.getElementById('answerInput'),btnSubmit=document.getElementById('btnSubmit'),gameTimer=document.getElementById('gameTimer'),gameLives=document.getElementById('gameLives'),gameScore=document.getElementById('gameScore'),gameProgress=document.getElementById('gameProgress'),feedback=document.getElementById('feedback'),reportName=document.getElementById('reportName'),reportScore=document.getElementById('reportScore'),reportStars=document.getElementById('reportStars'),reportGrade=document.getElementById('reportGrade'),reportGradeBar=document.getElementById('reportGradeBar'),reportFooter=document.getElementById('reportFooter'),btnRestart=document.getElementById('btnRestart'),startGroupBtns=document.querySelectorAll('.start-group-btn');
+
+const titleText="FLOOR IS LAVA OUTER SPACE BY TEACHER LIZBETH",titleColors=['#4488ff','#66aaff','#88ccff','#3366cc','#44aaff','#66ddff','#aaddff','#5588ff','#4488ff','#88ddff','#6699ff','#55bbff','#3366cc','#4477ff','#4488ff','#66aaff','#88ccff','#3366cc','#44aaff','#66ddff','#aaddff','#5588ff','#4488ff','#88ddff','#6699ff','#55bbff','#3366cc','#4477ff','#4488ff','#66aaff','#88ccff','#3366cc','#44aaff','#66ddff','#aaddff','#5588ff','#4488ff','#88ddff','#6699ff','#55bbff','#4488ff','#88ddff'],titleEl=document.getElementById('bounceTitle');
+titleText.split('').forEach(function(ch,i){var span=document.createElement('span');span.className='bounce-letter';span.textContent=ch===' '?'\u00A0':ch;span.style.color=titleColors[i%titleColors.length];span.style.animationDelay=(i*0.06)+'s';titleEl.appendChild(span);});
+
+let selectedGroup='';
+startGroupBtns.forEach(function(btn){btn.addEventListener('click',function(){selectedGroup=btn.dataset.startGroup;startGroupBtns.forEach(function(b){b.classList.remove('selected');});btn.classList.add('selected');});});
+
+const TOTAL_ROUNDS = VOCAB.length;
+const MAX_LIVES = 3;
+let state = {
+  name:'',group:'',questions:[],currentRound:0,score:0,lives:MAX_LIVES,
+  lavaLevel:0,timeLeft:20,timer:null,isPlaying:false,
+  isAnswered:false,gameOver:false,animalBurned:false,lavaAutoAccum:0
+};
+let animFrame=null,lastTime=0,canvasW=0,canvasH=0,gameActive=false,lavaParticles=[],emberParticles=[],lavaDrips=[];
+var pupSize=0;
+
+function shuffleArray(a){for(let i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function getTimeForRound(r){return 20-r*0.5;}
+
+// Sound effects using Web Audio API
+var audioCtx=null;
+function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();}
+function playTone(freq,dur,type,vol){
+  try{initAudio();var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type||'sine';o.frequency.value=freq;g.gain.setValueAtTime(vol||0.15,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+dur);}catch(e){}
+}
+var sounds={
+  correct:function(){playTone(523,0.1,'sine');setTimeout(function(){playTone(659,0.1,'sine')},100);setTimeout(function(){playTone(784,0.15,'sine')},200);},
+  wrong:function(){playTone(200,0.2,'sawtooth');setTimeout(function(){playTone(150,0.3,'sawtooth')},200);},
+  lavaRise:function(){playTone(80,0.4,'sine',0.1);},
+  burn:function(){playTone(300,0.15,'square',0.12);setTimeout(function(){playTone(200,0.2,'square',0.12)},150);setTimeout(function(){playTone(120,0.4,'square',0.1)},300);},
+  gameOver:function(){playTone(400,0.2,'sine',0.12);setTimeout(function(){playTone(300,0.2,'sine',0.12)},200);setTimeout(function(){playTone(200,0.2,'sine',0.12)},400);setTimeout(function(){playTone(100,0.5,'sine',0.1)},600);},
+  start:function(){playTone(262,0.1,'sine',0.1);setTimeout(function(){playTone(330,0.1,'sine',0.1)},100);setTimeout(function(){playTone(392,0.1,'sine',0.1)},200);setTimeout(function(){playTone(523,0.15,'sine',0.12)},300);}
+};
+
+// Lava splash particles
+function renderLavaParticles(){for(var i=lavaParticles.length-1;i>=0;i--){var p=lavaParticles[i];p.x+=p.vx;p.y+=p.vy;p.vy-=0.03;p.life-=0.008;if(p.life<=0)lavaParticles.splice(i,1);}}
+function addLavaParticles(x,y,count){for(let i=0;i<count;i++){lavaParticles.push({x:x+Math.random()*60-30,y:y,vy:Math.random()*3+2,vx:Math.random()*3-1.5,size:Math.random()*5+2,life:1,color:['#ff4500','#ff6b35','#ffd700','#ff1744','#ff8c00'][Math.floor(Math.random()*5)]});}}
+// Floating embers (background)
+function renderEmbers(){for(var i=emberParticles.length-1;i>=0;i--){var p=emberParticles[i];p.x+=Math.sin(p.phase+p.time*0.02)*0.3;p.y-=p.speed;p.time++;p.life-=0.002;if(p.life<=0)emberParticles.splice(i,1);}}
+function addEmber(count){for(let i=0;i<count;i++){emberParticles.push({x:Math.random()*canvasW,y:canvasH+Math.random()*30,vy:Math.random()*1.5+0.5,vx:Math.random()*0.5-0.25,size:Math.random()*2+0.5,life:1,phase:Math.random()*Math.PI*2,time:0,speed:Math.random()*0.8+0.3,color:['#ffffff','#88ccff','#aaddff','#ddeeff'][Math.floor(Math.random()*4)]});}}
+// Lava drips on sides
+function renderLavaDrips(){for(var i=lavaDrips.length-1;i>=0;i--){var d=lavaDrips[i];d.y+=d.speed;d.life-=0.005;if(d.life<=0||d.y>canvasH)lavaDrips.splice(i,1);}}
+function addLavaDrip(count){for(let i=0;i<count;i++){lavaDrips.push({x:Math.random()<0.5?Math.random()*30+5:canvasW-Math.random()*30-5,y:Math.random()*canvasH*0.5,speed:Math.random()*1.5+0.5,size:Math.random()*3+2,life:1,color:['#ff4500','#ff6b00','#ff8800'][Math.floor(Math.random()*3)]});}}
+
+function drawScene(t){
+  ctx.clearRect(0,0,canvasW,canvasH);
+  var w=canvasW,h=canvasH;
+  // Background gradient - deep space
+  var grd=ctx.createLinearGradient(0,0,0,h);
+  grd.addColorStop(0,'#05051a');grd.addColorStop(0.3,'#0a0a2e');grd.addColorStop(0.6,'#0d0d3d');grd.addColorStop(1,'#1a0a3a');
+  ctx.fillStyle=grd;ctx.fillRect(0,0,w,h);
+  // Stars background
+  for(var si=0;si<60;si++){
+    var sx=(si*137.5+50)%w,sy=(si*241.3+20)%h,ss=Math.sin(si*12.7+t*0.001+si)*0.5+0.5;
+    ctx.fillStyle='rgba(255,255,255,'+(ss*0.3+0.1)+')';ctx.beginPath();ctx.arc(sx,sy,ss*1.5+0.5,0,Math.PI*2);ctx.fill();
+  }
+  for(var si=0;si<15;si++){
+    var sx=(si*317+80)%w,sy=(si*173+40)%h,ss=Math.sin(t*0.003+si*5.1)*0.4+0.6;
+    ctx.fillStyle='rgba(200,220,255,'+(ss*0.4)+')';ctx.beginPath();ctx.arc(sx,sy,ss+0.5,0,Math.PI*2);ctx.fill();
+  }
+  // Floating space dust
+  if(Math.random()<0.4)addEmber(1);
+  renderEmbers();
+  emberParticles.forEach(function(p){ctx.fillStyle=p.color;ctx.globalAlpha=p.life*0.5;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;});
+  // Lava drips on edges
+  if(Math.random()<0.3)addLavaDrip(1);
+  renderLavaDrips();
+  lavaDrips.forEach(function(d){ctx.fillStyle=d.color;ctx.globalAlpha=d.life*0.4;ctx.beginPath();ctx.arc(d.x,d.y,d.size,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;});
+  // Distant planet
+  ctx.shadowColor='#4488ff';ctx.shadowBlur=30;
+  ctx.fillStyle='rgba(68,136,255,0.06)';ctx.beginPath();ctx.arc(w*0.88,h*0.15,15+Math.sin(t*0.001)*3,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(68,200,255,0.08)';ctx.beginPath();ctx.arc(w*0.88,h*0.15,8+Math.sin(t*0.002)*2,0,Math.PI*2);ctx.fill();
+  ctx.shadowBlur=0;
+
+  // ===== BIG EARTH =====
+  pupSize=Math.min(w*0.4,h*0.45,150);
+  var pupX=w*0.5,pupY=h*0.38;
+  ctx.shadowColor='#4488ff';ctx.shadowBlur=50;
+  ctx.fillStyle='rgba(68,136,255,0.1)';ctx.beginPath();ctx.arc(pupX,pupY,pupSize*0.55,0,Math.PI*2);ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.font=pupSize+'px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('🌍',pupX,pupY);
+  ctx.font='bold '+Math.max(pupSize*0.18,14)+'px sans-serif';
+  ctx.fillStyle='#88ccff';ctx.fillText('⬆ SAVE EARTH! ⬆',pupX,pupY-pupSize*0.7);
+
+  if(state.animalBurned){
+    ctx.shadowColor='#ff4500';ctx.shadowBlur=50;
+    ctx.fillStyle='rgba(255,69,0,0.3)';ctx.beginPath();ctx.arc(pupX,pupY,pupSize*0.7,0,Math.PI*2);ctx.fill();
+    ctx.shadowBlur=0;
+    ctx.font='bold '+Math.max(pupSize*0.22,16)+'px sans-serif';
+    ctx.fillStyle='#ff1744';ctx.fillText('💔 EARTH BURNED!',pupX,pupY+pupSize*0.8);
+  }
+
+  // ===== LAVA =====
+  var lavaPct=Math.min(state.lavaLevel/TOTAL_ROUNDS,1);
+  var lavaY=h*(1-lavaPct);
+  if(lavaY<h){
+    var lavaGrd=ctx.createLinearGradient(0,lavaY,0,h);
+    lavaGrd.addColorStop(0,'rgba(255,120,0,0.85)');lavaGrd.addColorStop(0.1,'rgba(255,60,0,0.9)');lavaGrd.addColorStop(0.4,'rgba(200,30,0,0.95)');lavaGrd.addColorStop(1,'rgba(120,10,0,1)');
+    ctx.fillStyle=lavaGrd;
+    ctx.beginPath();ctx.moveTo(0,lavaY+5);
+    for(var lx=0;lx<=w;lx+=10){
+      ctx.lineTo(lx,lavaY+Math.sin((lx+t*0.008)*0.12)*6+Math.sin((lx+t*0.005)*0.2)*4);
+    }
+    ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.closePath();ctx.fill();
+    // Top glow line
+    ctx.shadowColor='#ff8800';ctx.shadowBlur=25;
+    ctx.strokeStyle='rgba(255,200,50,0.3)';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(0,lavaY+5);
+    for(var lx=0;lx<=w;lx+=10){
+      ctx.lineTo(lx,lavaY+Math.sin((lx+t*0.008)*0.12)*6+Math.sin((lx+t*0.005)*0.2)*4);
+    }
+    ctx.stroke();
+    ctx.shadowBlur=0;
+    // Lava splash particles and mist
+    addLavaParticles(w*0.2,lavaY,Math.random()<0.2?2:0);
+    addLavaParticles(w*0.5,lavaY,Math.random()<0.25?2:0);
+    addLavaParticles(w*0.8,lavaY,Math.random()<0.2?2:0);
+    // Lava mist overlay
+    ctx.fillStyle='rgba(255,100,0,'+(Math.sin(t*0.005)*0.03+0.04)+')';
+    ctx.fillRect(0,lavaY-30,w,30);
+  }
+
+  // Danger flash when lava is high
+  if(lavaPct>0.7&&!state.gameOver){
+    ctx.fillStyle='rgba(255,0,0,'+(Math.sin(t*0.015)*0.15+0.1)+')';ctx.fillRect(0,0,w,h);
+  }
+  // Bottom ambient glow
+  ctx.shadowColor='#ff4400';ctx.shadowBlur=80;
+  ctx.fillStyle='rgba(255,60,0,0.06)';ctx.fillRect(0,h-60,w,60);
+  ctx.shadowBlur=0;
+  // Left and right lava glow
+  ctx.shadowColor='#ff2200';ctx.shadowBlur=40;
+  ctx.fillStyle='rgba(200,40,0,0.05)';ctx.fillRect(0,20,15,h-40);
+  ctx.fillStyle='rgba(200,40,0,0.05)';ctx.fillRect(w-15,20,15,h-40);
+  ctx.shadowBlur=0;
+  // Ember glow overlay at bottom
+  ctx.fillStyle='rgba(255,80,0,'+(Math.sin(t*0.003)*0.02+0.02)+')';
+  ctx.fillRect(0,h-100,w,100);
+}
+
+function renderLoop(t){
+  drawScene(t||0);
+  // Auto lava rise — 1 step every 12 seconds
+  if(gameActive&&!state.gameOver&&!state.isAnswered){
+    state.lavaAutoAccum+=20;
+    if(state.lavaAutoAccum>=1200){
+      state.lavaAutoAccum-=1200;
+      advanceLava(1);
+    }
+  }
+  animFrame=requestAnimationFrame(renderLoop);
+}
+
+function resizeCanvas(){
+  var wrapper=canvas.parentElement,rect=wrapper.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
+  canvasW=rect.width;canvasH=rect.height;
+  canvas.width=canvasW*dpr;canvas.height=canvasH*dpr;
+  canvas.style.width=canvasW+'px';canvas.style.height=canvasH+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+
+function updateLivesDisplay(){
+  var h='';for(let i=0;i<state.lives;i++)h+='❤️';for(let i=state.lives;i<MAX_LIVES;i++)h+='🖤';
+  gameLives.textContent=h||'💀';
+}
+
+function showLetterBoxes(word){
+  puzzleLetters.innerHTML='';
+  for(var i=0;i<word.length;i++){
+    var box=document.createElement('div');box.className='letter-box';box.dataset.index=i;
+    box.textContent='_';puzzleLetters.appendChild(box);
+  }
+}
+
+function startTimer(){
+  var round=state.currentRound;
+  state.timeLeft=getTimeForRound(round);
+  updateTimerDisplay();
+  if(state.timer)clearInterval(state.timer);
+  state.timer=setInterval(function(){
+    state.timeLeft-=0.1;
+    if(state.timeLeft<0)state.timeLeft=0;
+    updateTimerDisplay();
+    if(state.timeLeft<=0&&!state.isAnswered){
+      state.isAnswered=true;
+      handleTimeout();
+    }
+  },100);
+}
+
+function updateTimerDisplay(){
+  gameTimer.textContent='⏱️ '+state.timeLeft.toFixed(1)+'s';
+  gameTimer.className='game-timer'+(state.timeLeft<=4?' urgent':'');
+}
+
+function advanceLava(steps){
+  state.lavaLevel=Math.min(state.lavaLevel+steps,TOTAL_ROUNDS+2);
+  if(steps>0)sounds.lavaRise();
+  // Check if lava fully covered the puppy
+  if(state.lavaLevel>=TOTAL_ROUNDS&&!state.animalBurned){
+    state.animalBurned=true;
+    sounds.burn();
+    state.score=Math.max(0,state.score-0.5);
+    gameScore.textContent='⭐ '+state.score;
+    showFeedback(false,'🔥 EARTH BURNED! -0.5 🔥');
+    state.lavaLevel=Math.max(0,TOTAL_ROUNDS-6);
+    state.animalBurned=false;
+    state.lives--;
+    updateLivesDisplay();
+    if(state.lives<=0){endGame();return true;}
+    return true;
+  }
+  return false;
+}
+
+function handleTimeout(){
+  showFeedback(false,'⏰ TIME\'S UP!');
+  var burned=advanceLava(2);
+  if(burned)return;
+  state.lives--;
+  updateLivesDisplay();
+  if(state.lives<=0){endGame();return;}
+  setTimeout(function(){nextRound();},1200);
+}
+
+function setupRound(){
+  if(state.currentRound>=TOTAL_ROUNDS){endGame();return;}
+  state.isAnswered=false;state.lavaAutoAccum=0;
+  var q=state.questions[state.currentRound];
+  puzzleEmoji.textContent=q.emoji;
+  puzzleHint.textContent=q.spanish;
+  showLetterBoxes(q.english);
+  gameProgress.textContent=(state.currentRound+1)+' / '+TOTAL_ROUNDS;
+  updateLivesDisplay();
+  gameScore.textContent='⭐ '+state.score;
+  answerInput.value='';answerInput.focus();
+  startTimer();
+}
+
+function checkAnswer(){
+  if(state.isAnswered||!gameActive)return;
+  var q=state.questions[state.currentRound];
+  var ans=answerInput.value.trim().toUpperCase();
+  if(!ans)return;
+  state.isAnswered=true;
+  if(state.timer){clearInterval(state.timer);state.timer=null;}
+  if(ans===q.english){
+    sounds.correct();
+    state.score=Math.min(state.score+1,TOTAL_ROUNDS);
+    state.lavaLevel=0; // Reset lava to bottom
+    var boxes=puzzleLetters.querySelectorAll('.letter-box');
+    boxes.forEach(function(b,i){b.textContent=q.english[i];b.className='letter-box filled';});
+    showFeedback(true);
+    gameScore.textContent='⭐ '+state.score;
+    if(state.lives<=0||state.currentRound>=TOTAL_ROUNDS-1&&state.currentRound===state.currentRound){} // fall through
+    setTimeout(function(){nextRound();},800);
+  } else {
+    sounds.wrong();
+    var boxes=puzzleLetters.querySelectorAll('.letter-box');
+    boxes.forEach(function(b){b.className='letter-box wrong';});
+    setTimeout(function(){boxes.forEach(function(b){b.className='letter-box';});},500);
+    showFeedback(false,'✖ Correct: '+q.english);
+    var burned=advanceLava(2);
+    if(burned)return;
+    state.lives--;
+    updateLivesDisplay();
+    if(state.lives<=0){setTimeout(function(){endGame();},1200);return;}
+    setTimeout(function(){nextRound();},1200);
+  }
+}
+
+function nextRound(){
+  state.currentRound++;
+  if(state.currentRound>=TOTAL_ROUNDS){endGame();return;}
+  setupRound();
+}
+
+function showFeedback(correct,msg){
+  if(msg)feedback.textContent=msg;
+  else feedback.textContent=correct?'🎉 EARTH IS SAFER! 🔥⬇':'';
+  feedback.className='feedback show '+(correct?'correct':'wrong');
+  setTimeout(function(){feedback.className='feedback';},700);
+}
+
+function startGame(){
+  var name=nameInput.value.trim()||'Space Hero';
+  if(!selectedGroup){alert('Please choose a group (A or B) first!');return;}
+  state.name=name;state.group=selectedGroup;
+  state.questions=shuffleArray([...VOCAB]);
+  state.currentRound=0;state.score=0;state.lives=MAX_LIVES;
+  state.lavaLevel=0;state.gameOver=false;
+  state.isPlaying=true;state.isAnswered=false;state.animalBurned=false;
+  sounds.start();
+  if(state.timer){clearInterval(state.timer);state.timer=null;}
+  startScreen.classList.remove('active');gameScreen.classList.add('active');endScreen.classList.remove('active');
+  gameActive=true;
+  resizeCanvas();
+  if(animFrame)cancelAnimationFrame(animFrame);
+  animFrame=requestAnimationFrame(renderLoop);
+  setupRound();
+}
+
+function endGame(){
+  state.gameOver=true;gameActive=false;
+  sounds.gameOver();
+  if(state.timer){clearInterval(state.timer);state.timer=null;}
+  if(animFrame){cancelAnimationFrame(animFrame);animFrame=null;}
+  setTimeout(function(){
+    gameScreen.classList.remove('active');endScreen.classList.add('active');
+    var si=Math.floor(state.score);
+    document.getElementById('reportRibbon').textContent=si>=8?'👑':si>=5?'🚀':'🌟';
+    document.getElementById('reportBadge').textContent=si>=8?'👑':si>=5?'🚀':'🌟';
+    reportName.textContent='🌍 '+state.name+' 🚀';
+    reportScore.textContent=state.score+' / '+TOTAL_ROUNDS;
+    var grade=Math.floor((state.score/TOTAL_ROUNDS)*100)/10;
+    reportGrade.textContent=grade.toFixed(1);
+    reportGradeBar.style.setProperty('--grade-pct',(state.score/TOTAL_ROUNDS*100)+'%');
+    if(si>=8){
+      (function(){var emojis=['🌍','🚀','🌟','⭐','💫','🎉','🛸','☄️'];for(var i=0;i<25;i++){setTimeout(function(){var el=document.createElement('div');el.className='confetti';el.textContent=emojis[Math.floor(Math.random()*emojis.length)];el.style.left=Math.random()*100+'vw';el.style.fontSize=(14+Math.random()*18)+'px';el.style.position='fixed';el.style.pointerEvents='none';el.style.zIndex='100';el.style.animation='confettiFall '+(2+Math.random()*3)+'s linear forwards';document.body.appendChild(el);setTimeout(function(){el.remove();},5000);},i*80);}})();
+    }
+    var show=Math.min(si,10),stars='';for(var i=0;i<show;i++)stars+='⭐';
+    reportStars.innerHTML=stars||'☆';
+    var msgs=['🌍 Keep trying!','🚀 Nice effort!','🌍 Good job!','🚀 Great work!','🌟 You saved the Earth!','🚀 Space champion!','💫 Brilliant hero!','🥳 Outstanding!','🎯 Almost perfect!','👑 PERFECT! Space master!','🌈 Superstar!','🎆 Incredible!','💎 LEGENDARY!','👑 ABSOLUTE PERFECTION!'];
+    reportFooter.textContent=msgs[Math.min(si,msgs.length-1)];
+  },500);
+}
+
+btnStart.addEventListener('click',startGame);
+nameInput.addEventListener('keydown',function(e){if(e.key==='Enter')startGame();});
+btnRestart.addEventListener('click',function(){endScreen.classList.remove('active');startScreen.classList.add('active');startGroupBtns.forEach(function(b){b.classList.remove('selected');});selectedGroup='';state.group='';setTimeout(function(){nameInput.focus();},300);});
+btnSubmit.addEventListener('click',checkAnswer);
+answerInput.addEventListener('keydown',function(e){if(e.key==='Enter')checkAnswer();});
+var resizeTimer;
+window.addEventListener('resize',function(){clearTimeout(resizeTimer);resizeTimer=setTimeout(function(){if(gameScreen.classList.contains('active'))resizeCanvas();},200);});
+setTimeout(function(){nameInput.focus();},300);
+console.log('🌍 OUTER SPACE - Teacher Lizbeth 🌍');
+</script>
+</body>
+</html>
